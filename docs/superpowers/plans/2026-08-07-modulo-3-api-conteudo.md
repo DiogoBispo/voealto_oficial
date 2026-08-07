@@ -323,8 +323,8 @@ endpoints: [
 
 - [ ] **Step 1:** Escrever `apps/web/tests/int/publicApi.int.spec.ts` cobrindo, via `fetch()` real (não Local API):
   1. `GET /api/posts` retorna `{ docs, totalDocs, page, totalPages, hasNextPage }` e nenhum doc com `_status !== 'published'`.
-  2. `GET /api/posts/:slug` de um post publicado retorna 200 com o post certo.
-  3. `GET /api/posts/:slug` de um post com `_status: 'draft'` e `publishedAt` no **futuro** retorna 404 (o caso "agendado não aparece antes da hora" do SPEC).
+  2. `GET /api/posts/by-slug/:slug` de um post publicado retorna 200 com o post certo.
+  3. `GET /api/posts/by-slug/:slug` de um post com `_status: 'draft'` e `publishedAt` no **futuro** retorna 404 (o caso "agendado não aparece antes da hora" do SPEC).
   4. `GET /api/categories/:slug/posts` retorna só posts publicados daquela categoria.
   5. `GET /api/atlas/:slug/posts` retorna só posts publicados daquela localização.
   6. `POST /api/newsletter/subscribe` com email novo → 201; mesmo email de novo → 200 com mensagem amigável (não 500); email malformado → 400.
