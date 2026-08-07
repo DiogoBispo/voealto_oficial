@@ -125,6 +125,8 @@ endpoints: [
   - Se qualquer um dos dois falhar por colisão de rota, mudar o path pra `/by-slug/:slug` (endpoint fica em `/api/posts/by-slug/:slug`), documentar a divergência aqui no plano com um `DECISION`, e re-testar.
 - [ ] **Step 4:** Commit: `git add apps/web/src/collections/Posts && git commit -m "feat: add GET /api/posts/:slug custom endpoint"`
 
+> **DECISION (divergência confirmada na prática):** o path `/:slug` colidiu com o endpoint nativo do Payload `/api/posts/:id`. Teste realizado: após criar um post publicado (id numérico real, ex. `6`, slug `post-teste-task2-getbyslug`), `curl http://localhost:3000/api/posts/6` — que deveria retornar o post via busca nativa por ID — passou a retornar `404 {"error":"Post não encontrado"}`, porque o custom endpoint em `/:slug` interceptava a rota e tentava (sem sucesso) casar `"6"` contra o campo `slug`. Correção aplicada: path do custom endpoint mudado para `/by-slug/:slug`, ficando o endpoint final em `GET /api/posts/by-slug/:slug`. Re-testado com sucesso: `curl http://localhost:3000/api/posts/post-teste-task2-getbyslug` (via `/api/posts/by-slug/:slug`, ver Step 3 revisado) retornou 200 com o post, e `curl http://localhost:3000/api/posts/6` voltou a retornar 200 com a busca nativa por ID, sem colisão.
+
 ---
 
 ### Task 3: `GET /api/categories/:slug/posts` e `GET /api/atlas/:slug/posts`

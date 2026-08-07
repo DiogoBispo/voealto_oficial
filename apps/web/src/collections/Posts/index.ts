@@ -16,6 +16,7 @@ import { Banner } from '../../blocks/Banner/config'
 import { Code } from '../../blocks/Code/config'
 import { MediaBlock } from '../../blocks/MediaBlock/config'
 import { generatePreviewPath } from '../../utilities/generatePreviewPath'
+import { getPostBySlug } from './endpoints/getBySlug'
 import { populateAuthors } from './hooks/populateAuthors'
 import { preventContributorPublish } from './hooks/preventContributorPublish'
 import { revalidateDelete, revalidatePost } from './hooks/revalidatePost'
@@ -38,6 +39,16 @@ export const Posts: CollectionConfig<'posts'> = {
     read: authenticatedOrPublished,
     update: isAdminEditorOrOwnPost,
   },
+  endpoints: [
+    {
+      // DECISION: path mudado de '/:slug' para '/by-slug/:slug' — colidia com o
+      // endpoint nativo do Payload de busca por ID (/api/posts/:id). Ver
+      // DECISION no plano (Task 2) para o teste que confirmou a colisão.
+      path: '/by-slug/:slug',
+      method: 'get',
+      handler: getPostBySlug,
+    },
+  ],
   // This config controls what's populated by default when a post is referenced
   // https://payloadcms.com/docs/queries/select#defaultpopulate-collection-config-property
   // Type safe if the collection slug generic is passed to `CollectionConfig` - `CollectionConfig<'posts'>
