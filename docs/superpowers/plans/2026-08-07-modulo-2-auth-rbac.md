@@ -32,7 +32,7 @@
 **Interfaces:**
 - Produces: `User.role: 'admin' | 'editor' | 'contributor'`, disponível pra todas as access functions das próximas tasks (`req.user.role`).
 
-- [ ] **Step 1:** Criar `apps/web/src/collections/Users/hooks/setFirstUserAsAdmin.ts`:
+- [x] **Step 1:** Criar `apps/web/src/collections/Users/hooks/setFirstUserAsAdmin.ts`:
 ```typescript
 import type { CollectionBeforeChangeHook } from 'payload'
 
@@ -58,7 +58,7 @@ export const setFirstUserAsAdmin: CollectionBeforeChangeHook = async ({
   return data
 }
 ```
-- [ ] **Step 2:** Editar `apps/web/src/collections/Users/index.ts` — adicionar o campo `role` e o hook:
+- [x] **Step 2:** Editar `apps/web/src/collections/Users/index.ts` — adicionar o campo `role` e o hook:
 ```typescript
 import type { CollectionConfig } from 'payload'
 
@@ -110,8 +110,8 @@ export const Users: CollectionConfig = {
 }
 ```
 (`isAdmin`/`isAdminOrSelf` são criados na Task 2 — esta task assume que já existem; se rodar isolada, criar como stubs simples primeiro ou seguir a ordem das tasks.)
-- [ ] **Step 3:** Rodar `docker compose exec web npm run generate:types` e conferir que `User` em `payload-types.ts` tem `role: 'admin' | 'editor' | 'contributor'`.
-- [ ] **Step 4:** Commit: `git add apps/web/src/collections/Users && git commit -m "feat: add role field to Users with first-user-becomes-admin bootstrap"`
+- [x] **Step 3:** Rodar `docker compose exec web npm run generate:types` e conferir que `User` em `payload-types.ts` tem `role: 'admin' | 'editor' | 'contributor'`.
+- [x] **Step 4:** Commit: `git add apps/web/src/collections/Users && git commit -m "feat: add role field to Users with first-user-becomes-admin bootstrap"`
 
 ---
 
@@ -126,7 +126,7 @@ export const Users: CollectionConfig = {
 **Interfaces:**
 - Produces: funções `Access` (tipo do Payload) usadas nas Tasks 1, 3 e 4.
 
-- [ ] **Step 1:** Criar `apps/web/src/access/isAdmin.ts`:
+- [x] **Step 1:** Criar `apps/web/src/access/isAdmin.ts`:
 ```typescript
 import type { Access } from 'payload'
 
@@ -134,7 +134,7 @@ export const isAdmin: Access = ({ req: { user } }) => {
   return Boolean(user && user.role === 'admin')
 }
 ```
-- [ ] **Step 2:** Criar `apps/web/src/access/isAdminOrEditor.ts`:
+- [x] **Step 2:** Criar `apps/web/src/access/isAdminOrEditor.ts`:
 ```typescript
 import type { Access } from 'payload'
 
@@ -142,7 +142,7 @@ export const isAdminOrEditor: Access = ({ req: { user } }) => {
   return Boolean(user && (user.role === 'admin' || user.role === 'editor'))
 }
 ```
-- [ ] **Step 3:** Criar `apps/web/src/access/isAdminOrSelf.ts` (usado em `Users` — admin vê todo mundo, qualquer um vê/edita só a própria conta):
+- [x] **Step 3:** Criar `apps/web/src/access/isAdminOrSelf.ts` (usado em `Users` — admin vê todo mundo, qualquer um vê/edita só a própria conta):
 ```typescript
 import type { Access } from 'payload'
 
@@ -157,7 +157,7 @@ export const isAdminOrSelf: Access = ({ req: { user } }) => {
   }
 }
 ```
-- [ ] **Step 4:** Criar `apps/web/src/access/isAdminEditorOrOwnPost.ts` (usado em `Posts` — admin/editor mexem em qualquer post, contributor só nos próprios):
+- [x] **Step 4:** Criar `apps/web/src/access/isAdminEditorOrOwnPost.ts` (usado em `Posts` — admin/editor mexem em qualquer post, contributor só nos próprios):
 ```typescript
 import type { Access } from 'payload'
 
@@ -173,7 +173,7 @@ export const isAdminEditorOrOwnPost: Access = ({ req: { user } }) => {
   }
 }
 ```
-- [ ] **Step 5:** Commit: `git add apps/web/src/access/isAdmin.ts apps/web/src/access/isAdminOrEditor.ts apps/web/src/access/isAdminOrSelf.ts apps/web/src/access/isAdminEditorOrOwnPost.ts && git commit -m "feat: add role-based access control helpers"`
+- [x] **Step 5:** Commit: `git add apps/web/src/access/isAdmin.ts apps/web/src/access/isAdminOrEditor.ts apps/web/src/access/isAdminOrSelf.ts apps/web/src/access/isAdminEditorOrOwnPost.ts && git commit -m "feat: add role-based access control helpers"`
 
 ---
 
@@ -185,12 +185,12 @@ export const isAdminEditorOrOwnPost: Access = ({ req: { user } }) => {
 **Interfaces:**
 - Consumes: `isAdmin`, `isAdminOrEditor` (Task 2).
 
-- [ ] **Step 1:** Em `Categories.ts`, `Tags.ts`, `AtlasLocations.ts`, `Authors.ts`, `AffiliateLinks.ts` (mesmo padrão nas 5): trocar `create`/`delete`/`update: authenticated` por `isAdminOrEditor`, manter `read: anyone`.
-- [ ] **Step 2:** Em `Media.ts`: `create: isAdminOrEditor` vira **exceção** — contributor também precisa subir imagem (Decisão 2). Usar uma nova função inline `({ req: { user } }) => Boolean(user)` (equivalente ao `authenticated` já existente, é o comportamento correto aqui — reaproveitar o `authenticated` já importado, sem criar função nova) só pra `create`; `update`/`delete: isAdminOrEditor`; `read: anyone` (mantido).
-- [ ] **Step 3:** Em `Pages/index.ts`: `create`/`delete`/`update: isAdminOrEditor` (páginas institucionais não são coisa de contributor), `read: authenticatedOrPublished` (mantido, já está correto).
-- [ ] **Step 4:** Em `NewsletterSubscribers.ts`: `create`/`update`/`delete`/`read: isAdminOrEditor` (era `authenticated` — agora contributor não vê a lista de inscritos).
-- [ ] **Step 5:** Rodar `docker compose exec web npm run build` pra confirmar que não quebrou nenhum tipo.
-- [ ] **Step 6:** Commit: `git add apps/web/src/collections/Categories.ts apps/web/src/collections/Tags.ts apps/web/src/collections/AtlasLocations.ts apps/web/src/collections/Authors.ts apps/web/src/collections/Media.ts apps/web/src/collections/Pages/index.ts apps/web/src/collections/AffiliateLinks.ts apps/web/src/collections/NewsletterSubscribers.ts && git commit -m "feat: apply role-based access control to content collections"`
+- [x] **Step 1:** Em `Categories.ts`, `Tags.ts`, `AtlasLocations.ts`, `Authors.ts`, `AffiliateLinks.ts` (mesmo padrão nas 5): trocar `create`/`delete`/`update: authenticated` por `isAdminOrEditor`, manter `read: anyone`.
+- [x] **Step 2:** Em `Media.ts`: `create: isAdminOrEditor` vira **exceção** — contributor também precisa subir imagem (Decisão 2). Usar uma nova função inline `({ req: { user } }) => Boolean(user)` (equivalente ao `authenticated` já existente, é o comportamento correto aqui — reaproveitar o `authenticated` já importado, sem criar função nova) só pra `create`; `update`/`delete: isAdminOrEditor`; `read: anyone` (mantido).
+- [x] **Step 3:** Em `Pages/index.ts`: `create`/`delete`/`update: isAdminOrEditor` (páginas institucionais não são coisa de contributor), `read: authenticatedOrPublished` (mantido, já está correto).
+- [x] **Step 4:** Em `NewsletterSubscribers.ts`: `create`/`update`/`delete`/`read: isAdminOrEditor` (era `authenticated` — agora contributor não vê a lista de inscritos).
+- [x] **Step 5:** Rodar `docker compose exec web npm run build` pra confirmar que não quebrou nenhum tipo.
+- [x] **Step 6:** Commit: `git add apps/web/src/collections/Categories.ts apps/web/src/collections/Tags.ts apps/web/src/collections/AtlasLocations.ts apps/web/src/collections/Authors.ts apps/web/src/collections/Media.ts apps/web/src/collections/Pages/index.ts apps/web/src/collections/AffiliateLinks.ts apps/web/src/collections/NewsletterSubscribers.ts && git commit -m "feat: apply role-based access control to content collections"`
 
 ---
 
@@ -206,7 +206,7 @@ export const isAdminEditorOrOwnPost: Access = ({ req: { user } }) => {
 
 **Cuidado (achado na revisão do plano, antes de executar):** `isAdminEditorOrOwnPost` decide posse checando o campo `authors` (relationship -> `users`, já existente). Nada preenche esse campo automaticamente hoje — um contributor que cria um post sem se adicionar manualmente em `authors` ficaria sem conseguir editar o próprio post depois (trancado fora). Por isso este hook novo:
 
-- [ ] **Step 0:** Criar `apps/web/src/collections/Posts/hooks/setPostAuthorOnCreate.ts`:
+- [x] **Step 0:** Criar `apps/web/src/collections/Posts/hooks/setPostAuthorOnCreate.ts`:
 ```typescript
 import type { CollectionBeforeChangeHook } from 'payload'
 
@@ -226,7 +226,7 @@ export const setPostAuthorOnCreate: CollectionBeforeChangeHook = ({
   return { ...data, authors: [...currentAuthors, req.user.id] }
 }
 ```
-- [ ] **Step 1:** Criar `apps/web/src/collections/Posts/hooks/preventContributorPublish.ts`:
+- [x] **Step 1:** Criar `apps/web/src/collections/Posts/hooks/preventContributorPublish.ts`:
 ```typescript
 import type { CollectionBeforeChangeHook } from 'payload'
 
@@ -240,7 +240,7 @@ export const preventContributorPublish: CollectionBeforeChangeHook = ({ data, re
   return data
 }
 ```
-- [ ] **Step 2:** Em `Posts/index.ts`, trocar o `access` existente:
+- [x] **Step 2:** Em `Posts/index.ts`, trocar o `access` existente:
 ```typescript
 access: {
   create: authenticated,
@@ -250,7 +250,7 @@ access: {
 },
 ```
 (mantém `create: authenticated` — qualquer papel logado pode criar um post, a restrição de dono só faz sentido pra editar/apagar um que já existe; `read` continua igual, não muda neste módulo.)
-- [ ] **Step 3:** Adicionar os dois hooks em `hooks.beforeChange`, mantendo os que já existem (ordem importa: definir o autor antes de decidir sobre publicação):
+- [x] **Step 3:** Adicionar os dois hooks em `hooks.beforeChange`, mantendo os que já existem (ordem importa: definir o autor antes de decidir sobre publicação):
 ```typescript
 hooks: {
   beforeChange: [setPostAuthorOnCreate, preventContributorPublish],
@@ -259,8 +259,8 @@ hooks: {
   afterDelete: [revalidateDelete],
 },
 ```
-- [ ] **Step 4:** Rodar `docker compose exec web npm run build`.
-- [ ] **Step 5:** Commit: `git add apps/web/src/collections/Posts && git commit -m "feat: restrict Posts access by role and block contributor publish"`
+- [x] **Step 4:** Rodar `docker compose exec web npm run build`.
+- [x] **Step 5:** Commit: `git add apps/web/src/collections/Posts && git commit -m "feat: restrict Posts access by role and block contributor publish"`
 
 ---
 
@@ -268,7 +268,7 @@ hooks: {
 
 **Files:** nenhum novo — script descartável de verificação (`apps/web/scripts/verify-modulo-2.ts`, apagado ao final, mesmo padrão do Módulo 1).
 
-- [ ] **Step 1:** Escrever script que, via Local API (`overrideAccess: true` só pra SETUP — os testes de fato usam `overrideAccess: false` simulando `req.user` de cada papel):
+- [x] **Step 1:** Escrever script que, via Local API (`overrideAccess: true` só pra SETUP — os testes de fato usam `overrideAccess: false` simulando `req.user` de cada papel):
   1. Cria 3 usuários: `admin@test.local` (deve nascer `role: admin` por ser o primeiro), `editor@test.local` (`role: editor`), `contributor@test.local` (`role: contributor`).
   2. Confirma que o primeiro (`admin@test.local`) recebeu `role: admin` automaticamente mesmo sem pedir.
   3. Como `contributor`: cria um post próprio com `_status: 'published'` — confirma que salva como `draft` (hook reverteu).
@@ -276,14 +276,29 @@ hooks: {
   5. Como `editor`: publica o post criado pelo contributor — confirma que funciona (`_status: 'published'` persiste).
   6. Como `contributor`: tenta ler/criar em `NewsletterSubscribers` — confirma negado.
   7. Limpa os registros de teste ao final.
-- [ ] **Step 2:** Rodar `docker compose exec web npx tsx scripts/verify-modulo-2.ts` e reportar cada um dos 6 resultados.
-- [ ] **Step 3:** Apagar o script (`rm apps/web/scripts/verify-modulo-2.ts`).
-- [ ] **Step 4:** Login manual: usuário confirma em `http://localhost:3000/admin` que consegue logar com email/senha (pelo menos com a conta admin já existente ou uma nova).
+- [x] **Step 2:** Rodar `docker compose exec web npx tsx scripts/verify-modulo-2.ts` e reportar cada um dos 6 resultados.
+- [x] **Step 3:** Apagar o script (`rm apps/web/scripts/verify-modulo-2.ts`).
+- [x] **Step 4:** Login manual: usuário confirma em `http://localhost:3000/admin` que consegue logar com email/senha (pelo menos com a conta admin já existente ou uma nova).
 
 ## Definição de Pronto (Módulo 2)
 
-- [ ] Login por email/senha funcional.
-- [ ] `contributor` não consegue publicar (hook reverte pra draft), nem editar posts de terceiros, nem gerenciar usuários/newsletter.
-- [ ] `editor`/`admin` conseguem publicar posts de terceiros.
-- [ ] Tentativa de acesso negado retorna erro de acesso controlado (403), nunca uma exceção não tratada (500).
-- [ ] Testado com 3 contas reais (uma por papel), não só lendo o código.
+- [x] Login por email/senha funcional (`payload.login` retornou token válido).
+- [x] `contributor` não consegue publicar (hook reverteu `_status` pra `draft`), nem editar posts de terceiros (`Forbidden`), nem gerenciar usuários/newsletter/categorias (`Forbidden`), nem se auto-promover a admin (field-access do `role` bloqueou).
+- [x] `editor` publicou com sucesso o post criado pelo contributor (`_status: 'published'` persistiu).
+- [x] Toda tentativa de acesso negado retornou erro `Forbidden` controlado — nenhuma exceção crua, nenhum 500.
+- [x] Testado com 4 contas reais (admin, editor, 2 contributors — pra cobrir também "contributor não edita post de OUTRO contributor"), não só lendo o código.
+
+### Verificação real executada
+
+Rodada via script descartável (`apps/web/scripts/verify-modulo-2.ts`, removido após uso) contra o Postgres real, simulando cada papel com `overrideAccess: false` + `user: <ator>` (a Local API do Payload roda com `overrideAccess: true` por padrão — sem isso o teste não estaria validando nada de verdade). Os 8 cenários passaram na primeira execução completa:
+
+1. Primeiro usuário nasceu `admin` mesmo pedindo `contributor` explicitamente (bootstrap funcionando).
+2. Contributor A criou post, tentou `_status: published` direto — hook reverteu pra `draft`.
+3. `setPostAuthorOnCreate` adicionou Contributor A como dono automaticamente (sem isso ele ficaria trancado fora do próprio post — bug evitado ainda na fase de plano, ver Task 4).
+4. Contributor B tentando editar o post do Contributor A → `Forbidden`.
+5. Editor publicou o post de terceiro com sucesso.
+6. Contributor lendo `newsletter-subscribers` → `Forbidden`.
+7. Contributor criando `categories` → `Forbidden`.
+8. Contributor tentando se auto-promover a admin → campo `role` não mudou (field-access bloqueou a escrita nesse campo especificamente, sem rejeitar o update inteiro).
+
+Nenhum bug novo encontrado nesta verificação (diferente do Módulo 1) — o único ponto de atenção (posse automática do post) já tinha sido identificado e corrigido durante a escrita do plano, antes da implementação.
