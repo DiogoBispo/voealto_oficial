@@ -47,7 +47,13 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   redirects,
   turbopack: {
-    root: path.resolve(dirname),
+    // DECISION: apps/web roda dentro de um monorepo com npm workspaces —
+    // node_modules (incluindo o pacote `next`) fica hoisted na raiz do
+    // repositório, não em apps/web/node_modules. O Turbopack precisa que
+    // `root` aponte pra onde o node_modules efetivamente está, senão falha
+    // com "couldn't find the Next.js package from the project directory".
+    // https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory
+    root: path.resolve(dirname, '..', '..'),
   },
 }
 

@@ -40,86 +40,90 @@
   }
 }
 ```
-- [ ] **Step 3:** Criar `.gitignore` na raiz cobrindo `node_modules/`, `.next/`, `.env`, `apps/web/.env`.
+- [ ] **Step 3:** Criar `.gitignore` na raiz cobrindo `node_modules/`, `.next/`, `.env`, `apps/web/.env`, `SKILLS/` (repo vendorizado de referência, não faz parte do código do projeto) e `.claude/` (config local).
 - [ ] **Step 4:** Rodar `npm install` na raiz e confirmar que resolve sem erro.
 - [ ] **Step 5:** Commit: `git add package.json .gitignore apps/web && git commit -m "chore: scaffold monorepo and payload+next app"`
 
 ---
 
-### Task 2: Dockerfile multi-stage para apps/web
+### Task 2: Dockerfile de desenvolvimento para apps/web
+
+> **DECISION (revisada após testar o build real):** o template do Payload roda `generateStaticParams` contra o Postgres durante o `next build`. Num `docker build` isso falha, porque o container `web` não enxerga o container `postgres` nesse estágio (containers irmãos não têm rede entre si durante build, só em runtime via compose). Como o Docker Compose aqui é o **ambiente local de desenvolvimento** (produção é Vercel + Postgres gerenciado — PRD seção 7), o Dockerfile deste módulo roda `next dev`, não um build de produção. Build de produção fica para quando o deploy for tratado (fora do escopo do MVP/Módulo 0). Isso também elimina o problema de standalone output do Next, que exigiria reestruturar o `next.config.ts`.
+>
+> Também corrigido nesta revisão: build/monorepo é **npm workspaces com node_modules hoisted na raiz** — o contexto de build tem que ser a raiz do repo, não `apps/web/`, senão o container não vê o `node_modules` raiz nem o `package-lock.json` do workspace.
 
 **Files:**
-- Create: `apps/web/Dockerfile`
-- Create: `apps/web/.dockerignore`
+- Overwrite: `apps/web/Dockerfile` (o scaffolder gerou um Dockerfile de produção Mongo/yarn/standalone genérico — substituir)
+- Delete: `apps/web/docker-compose.yml` (o scaffolder gerou um compose com Mongo — redundante e incorreto, o compose real é o da raiz, Task 3)
+- Create: `.dockerignore` (raiz)
 
 **Interfaces:**
-- Consumes: `apps/web/package.json` gerado na Task 1.
-- Produces: imagem Docker `blog-viagem-web` usada pelo `docker-compose.yml` da Task 3.
+- Consumes: `package.json` + `package-lock.json` da raiz e `apps/web/package.json` (Task 1).
+- Produces: imagem Docker usada pelo serviço `web` do `docker-compose.yml` da Task 3, contexto de build = raiz do repo.
 
-- [ ] **Step 1:** Criar `apps/web/.dockerignore`:
+- [ ] **Step 1:** Criar `.dockerignore` na raiz:
 ```
 node_modules
 .next
 .env
 .git
+SKILLS
 ```
-- [ ] **Step 2:** Criar `apps/web/Dockerfile`:
+- [ ] **Step 2:** Apagar `apps/web/docker-compose.yml` (Mongo, não se aplica): `rm apps/web/docker-compose.yml`.
+- [ ] **Step 3:** Sobrescrever `apps/web/Dockerfile` (build context = raiz do repo, ver `dockerfile:`/`context:` no compose da Task 3):
 ```dockerfile
-# --- deps ---
 FROM node:20-alpine AS deps
-WORKDIR /app
+WORKDIR /repo
 COPY package.json package-lock.json ./
+COPY apps/web/package.json apps/web/package.json
 RUN npm ci
 
-# --- build ---
-FROM node:20-alpine AS build
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+FROM node:20-alpine AS dev
+WORKDIR /repo
+COPY --from=deps /repo/node_modules ./node_modules
 COPY . .
-RUN npm run build
-
-# --- runtime ---
-FROM node:20-alpine AS runtime
-WORKDIR /app
-ENV NODE_ENV=production
-COPY --from=build /app/next.config.* ./
-COPY --from=build /app/public ./public
-COPY --from=build /app/.next ./.next
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/package.json ./package.json
+WORKDIR /repo/apps/web
 EXPOSE 3000
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]
 ```
-- [ ] **Step 3:** Validar sintaticamente sem Docker: `docker build` não está disponível aqui — em vez disso, rodar `npm run build -w apps/web` localmente e confirmar que builda sem erro (mesmo comando que o estágio `build` do Dockerfile executa).
-- [ ] **Step 4:** Commit: `git add apps/web/Dockerfile apps/web/.dockerignore && git commit -m "feat: add multi-stage dockerfile for web app"`
+- [ ] **Step 4:** Validar sem Docker: confirmar que `npm run build -w apps/web` (com `DATABASE_URL` e `PAYLOAD_SECRET` de exemplo exportados no shell) compila e só falha na etapa de conexão real ao Postgres (`ECONNREFUSED`) — isso confirma que o código está correto e o único bloqueio é a ausência de um Postgres real, esperado neste ambiente sem Docker.
+- [ ] **Step 5:** Commit: `git add apps/web/Dockerfile .dockerignore && git rm apps/web/docker-compose.yml && git commit -m "feat: replace scaffolded dockerfile/compose with npm+postgres dev container"`
 
 ---
 
 ### Task 3: docker-compose.yml + .env.example
 
+> **DECISION:** o código gerado usa `process.env.DATABASE_URL` (não `DATABASE_URI` como o SPEC nomeia em prosa) — seguindo o código real, não o texto do SPEC, para não ter que tocar em `payload.config.ts`. `CRON_SECRET` e `PREVIEW_SECRET` também são lidos pelo template (rotas de preview/cron do site institucional) — incluídos no `.env.example` para não faltar nenhuma variável usada (critério de aceite do SPEC 0.2).
+
 **Files:**
 - Create: `docker-compose.yml` (raiz)
-- Create: `.env.example` (raiz)
+- Create: `.env.example` (raiz) — substitui/complementa o `apps/web/.env.example` gerado pelo scaffolder
+- Delete: `apps/web/.env.example` (consolidado no `.env.example` da raiz, único lugar de verdade)
 
 **Interfaces:**
-- Consumes: `apps/web/Dockerfile` (Task 2), variável `DATABASE_URI` esperada por `apps/web/src/payload.config.ts` (gerado pelo template na Task 1).
+- Consumes: `apps/web/Dockerfile` (Task 2), variável `DATABASE_URL` esperada por `apps/web/src/payload.config.ts` (gerado pelo template na Task 1).
 - Produces: comando `docker compose up` funcional (a ser validado pelo usuário, ver Global Constraints).
 
-- [ ] **Step 1:** Criar `.env.example` na raiz:
+- [ ] **Step 1:** Apagar `apps/web/.env.example`: `git rm apps/web/.env.example`.
+- [ ] **Step 2:** Criar `.env.example` na raiz:
 ```
 # Postgres
 POSTGRES_USER=blogviagem
 POSTGRES_PASSWORD=changeme
 POSTGRES_DB=blogviagem
-DATABASE_URI=postgres://blogviagem:changeme@postgres:5432/blogviagem
+DATABASE_URL=postgres://blogviagem:changeme@postgres:5432/blogviagem
 
 # Payload
 PAYLOAD_SECRET=changeme-generate-a-real-secret
 
 # Next.js
 NEXT_PUBLIC_SERVER_URL=http://localhost:3000
+
+# Template do site institucional (rotas de preview/cron do Payload website template)
+CRON_SECRET=changeme-generate-a-real-secret
+PREVIEW_SECRET=changeme-generate-a-real-secret
 ```
-- [ ] **Step 2:** Criar `docker-compose.yml`:
+- [ ] **Step 3:** Criar `docker-compose.yml`:
 ```yaml
 services:
   postgres:
@@ -139,14 +143,20 @@ services:
 
   web:
     build:
-      context: ./apps/web
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/web/Dockerfile
     restart: unless-stopped
     env_file: .env
     environment:
-      DATABASE_URI: ${DATABASE_URI}
+      DATABASE_URL: ${DATABASE_URL}
       PAYLOAD_SECRET: ${PAYLOAD_SECRET}
       NEXT_PUBLIC_SERVER_URL: ${NEXT_PUBLIC_SERVER_URL}
+      CRON_SECRET: ${CRON_SECRET}
+      PREVIEW_SECRET: ${PREVIEW_SECRET}
+    volumes:
+      - .:/repo
+      - /repo/node_modules
+      - /repo/apps/web/.next
     ports:
       - "3000:3000"
     depends_on:
@@ -156,8 +166,9 @@ services:
 volumes:
   postgres_data:
 ```
-- [ ] **Step 3:** Confirmar que `.env.example` cobre 100% das variáveis referenciadas em `docker-compose.yml` e em `apps/web/src/payload.config.ts` (grep por `process.env` em `apps/web/src`).
-- [ ] **Step 4:** Commit: `git add docker-compose.yml .env.example && git commit -m "feat: add docker-compose with postgres and web services"`
+  (os volumes `/repo/node_modules` e `/repo/apps/web/.next` são anônimos e existem só pra não deixar o bind mount `.:/repo` sobrescrever o que já foi instalado/buildado dentro da imagem — permite hot-reload do código montando o repo mas preservando `node_modules` do container.)
+- [ ] **Step 4:** Confirmar que `.env.example` cobre 100% das variáveis referenciadas em `docker-compose.yml` e em `apps/web/src/payload.config.ts` (grep por `process.env` em `apps/web/src`).
+- [ ] **Step 5:** Commit: `git add docker-compose.yml .env.example && git rm apps/web/.env.example && git commit -m "feat: add docker-compose with postgres and web dev services"`
 
 ---
 
