@@ -189,4 +189,4 @@ volumes:
 
 - [x] `npm install` + `npm run build -w apps/web` rodam sem erro de código neste ambiente (o único erro restante é `ECONNREFUSED` por não haver Postgres real disponível aqui — esperado e documentado, não é falha de configuração).
 - [x] `docker-compose.yml` e `.env.example` revisados e cobrindo todas as variáveis usadas em `apps/web/src` (validação estática via grep, já que Docker não roda neste ambiente de execução).
-- [ ] **Pendente do usuário:** confirmar manualmente que `docker compose up` sobe Postgres + app e que `/admin` carrega em `http://localhost:3000/admin`.
+- [x] **Confirmado:** `docker compose up --build` sobe Postgres (`healthy`) + app (`next dev`, `✓ Ready`), `/` e `/admin` respondem HTTP 200 em `http://localhost:3000`.
