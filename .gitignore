@@ -1,6 +1,26 @@
 node_modules/
 .next/
+
+# Env files — nunca commitar valores reais, só .env.example
 .env
+.env.*
+!.env.example
 apps/web/.env
+apps/web/.env.*
+
+# Segredos/credenciais genéricos, por precaução
+*.pem
+*.key
+*.p12
+*credentials*.json
+*service-account*.json
+
+# SO / editor
+.DS_Store
+Thumbs.db
+
+# Repo vendorizado de referência (skills), não é código do projeto
 SKILLS/
+
+# Config local do Claude Code
 .claude/
