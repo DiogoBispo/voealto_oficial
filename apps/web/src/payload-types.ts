@@ -238,6 +238,10 @@ export interface Post {
   id: number;
   title: string;
   heroImage?: (number | null) | Media;
+  /**
+   * Resumo curto usado nos cards de listagem (máx. 300 caracteres).
+   */
+  excerpt?: string | null;
   content: {
     root: {
       type: string;
@@ -255,6 +259,9 @@ export interface Post {
   };
   relatedPosts?: (number | Post)[] | null;
   categories?: (number | Category)[] | null;
+  tags?: (number | Tag)[] | null;
+  locations?: (number | AtlasLocation)[] | null;
+  author: number | Author;
   meta?: {
     title?: string | null;
     /**
@@ -265,6 +272,10 @@ export interface Post {
   };
   publishedAt?: string | null;
   authors?: (number | User)[] | null;
+  /**
+   * Marca o post como conteúdo patrocinado — exibe badge "Conteúdo patrocinado" no front (Módulo 5).
+   */
+  sponsored?: boolean | null;
   populatedAuthors?:
     | {
         id?: string | null;
@@ -406,6 +417,7 @@ export interface FolderInterface {
 export interface Category {
   id: number;
   title: string;
+  description?: string | null;
   /**
    * When enabled, the slug will auto-generate from the title field on save and autosave.
    */
@@ -420,6 +432,65 @@ export interface Category {
         id?: string | null;
       }[]
     | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags".
+ */
+export interface Tag {
+  id: number;
+  title: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "atlas-locations".
+ */
+export interface AtlasLocation {
+  id: number;
+  title: string;
+  type: 'continent' | 'country' | 'city';
+  /**
+   * Ex.: uma cidade tem como parent o país; um país tem como parent o continente.
+   */
+  parent?: (number | null) | AtlasLocation;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "authors".
+ */
+export interface Author {
+  id: number;
+  title: string;
+  bio?: string | null;
+  avatar?: (number | null) | Media;
+  socials?:
+    | {
+        platform: 'instagram' | 'tiktok' | 'youtube' | 'facebook' | 'pinterest' | 'website';
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -779,65 +850,6 @@ export interface Form {
         id?: string | null;
       }[]
     | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "tags".
- */
-export interface Tag {
-  id: number;
-  title: string;
-  /**
-   * When enabled, the slug will auto-generate from the title field on save and autosave.
-   */
-  generateSlug?: boolean | null;
-  slug: string;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "atlas-locations".
- */
-export interface AtlasLocation {
-  id: number;
-  title: string;
-  type: 'continent' | 'country' | 'city';
-  /**
-   * Ex.: uma cidade tem como parent o país; um país tem como parent o continente.
-   */
-  parent?: (number | null) | AtlasLocation;
-  /**
-   * When enabled, the slug will auto-generate from the title field on save and autosave.
-   */
-  generateSlug?: boolean | null;
-  slug: string;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "authors".
- */
-export interface Author {
-  id: number;
-  title: string;
-  bio?: string | null;
-  avatar?: (number | null) | Media;
-  socials?:
-    | {
-        platform: 'instagram' | 'tiktok' | 'youtube' | 'facebook' | 'pinterest' | 'website';
-        url: string;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * When enabled, the slug will auto-generate from the title field on save and autosave.
-   */
-  generateSlug?: boolean | null;
-  slug: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -1301,9 +1313,13 @@ export interface FormBlockSelect<T extends boolean = true> {
 export interface PostsSelect<T extends boolean = true> {
   title?: T;
   heroImage?: T;
+  excerpt?: T;
   content?: T;
   relatedPosts?: T;
   categories?: T;
+  tags?: T;
+  locations?: T;
+  author?: T;
   meta?:
     | T
     | {
@@ -1313,6 +1329,7 @@ export interface PostsSelect<T extends boolean = true> {
       };
   publishedAt?: T;
   authors?: T;
+  sponsored?: T;
   populatedAuthors?:
     | T
     | {
@@ -1425,6 +1442,7 @@ export interface MediaSelect<T extends boolean = true> {
  */
 export interface CategoriesSelect<T extends boolean = true> {
   title?: T;
+  description?: T;
   generateSlug?: T;
   slug?: T;
   parent?: T;

@@ -82,6 +82,14 @@ export const Posts: CollectionConfig<'posts'> = {
               relationTo: 'media',
             },
             {
+              name: 'excerpt',
+              type: 'textarea',
+              maxLength: 300,
+              admin: {
+                description: 'Resumo curto usado nos cards de listagem (máx. 300 caracteres).',
+              },
+            },
+            {
               name: 'content',
               type: 'richText',
               editor: lexicalEditor({
@@ -128,6 +136,33 @@ export const Posts: CollectionConfig<'posts'> = {
               },
               hasMany: true,
               relationTo: 'categories',
+            },
+            {
+              name: 'tags',
+              type: 'relationship',
+              admin: {
+                position: 'sidebar',
+              },
+              hasMany: true,
+              relationTo: 'tags',
+            },
+            {
+              name: 'locations',
+              type: 'relationship',
+              admin: {
+                position: 'sidebar',
+              },
+              hasMany: true,
+              relationTo: 'atlas-locations',
+            },
+            {
+              name: 'author',
+              type: 'relationship',
+              required: true,
+              admin: {
+                position: 'sidebar',
+              },
+              relationTo: 'authors',
             },
           ],
           label: 'Meta',
@@ -189,6 +224,16 @@ export const Posts: CollectionConfig<'posts'> = {
       },
       hasMany: true,
       relationTo: 'users',
+    },
+    {
+      name: 'sponsored',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        position: 'sidebar',
+        description:
+          'Marca o post como conteúdo patrocinado — exibe badge "Conteúdo patrocinado" no front (Módulo 5).',
+      },
     },
     // This field is only used to populate the user data via the `populateAuthors` hook
     // This is because the `user` collection has access control locked to protect user privacy

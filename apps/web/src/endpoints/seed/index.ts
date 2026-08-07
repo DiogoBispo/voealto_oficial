@@ -98,45 +98,55 @@ export const seed = async ({
     ),
   ])
 
-  const [demoAuthor, image1Doc, image2Doc, image3Doc, imageHomeDoc] = await Promise.all([
-    payload.create({
-      collection: 'users',
-      data: {
-        name: 'Demo Author',
-        email: 'demo-author@example.com',
-        password: 'password',
-      },
-    }),
-    payload.create({
-      collection: 'media',
-      data: image1,
-      file: image1Buffer,
-    }),
-    payload.create({
-      collection: 'media',
-      data: image2,
-      file: image2Buffer,
-    }),
-    payload.create({
-      collection: 'media',
-      data: image2,
-      file: image3Buffer,
-    }),
-    payload.create({
-      collection: 'media',
-      data: imageHero1,
-      file: hero1Buffer,
-    }),
-    categories.map((category) =>
+  const [demoAuthor, demoArticleAuthor, image1Doc, image2Doc, image3Doc, imageHomeDoc] =
+    await Promise.all([
       payload.create({
-        collection: 'categories',
+        collection: 'users',
         data: {
-          title: category,
-          slug: category,
+          name: 'Demo Author',
+          email: 'demo-author@example.com',
+          password: 'password',
         },
       }),
-    ),
-  ])
+      // DECISION: Posts.author (relationship -> authors) agora é obrigatório;
+      // criamos um perfil público de autor demo pro seed continuar funcionando.
+      payload.create({
+        collection: 'authors',
+        data: {
+          title: 'Demo Author',
+          slug: 'demo-author',
+        },
+      }),
+      payload.create({
+        collection: 'media',
+        data: image1,
+        file: image1Buffer,
+      }),
+      payload.create({
+        collection: 'media',
+        data: image2,
+        file: image2Buffer,
+      }),
+      payload.create({
+        collection: 'media',
+        data: image2,
+        file: image3Buffer,
+      }),
+      payload.create({
+        collection: 'media',
+        data: imageHero1,
+        file: hero1Buffer,
+      }),
+      categories.map((category) =>
+        payload.create({
+          collection: 'categories',
+          data: {
+            title: category,
+            slug: category,
+          },
+        }),
+      ),
+    ])
 
   payload.logger.info(`— Seeding posts...`)
 
@@ -148,7 +158,12 @@ export const seed = async ({
     context: {
       disableRevalidate: true,
     },
-    data: post1({ heroImage: image1Doc, blockImage: image2Doc, author: demoAuthor }),
+    data: post1({
+      heroImage: image1Doc,
+      blockImage: image2Doc,
+      author: demoAuthor,
+      articleAuthor: demoArticleAuthor,
+    }),
   })
 
   const post2Doc = await payload.create({
@@ -157,7 +172,12 @@ export const seed = async ({
     context: {
       disableRevalidate: true,
     },
-    data: post2({ heroImage: image2Doc, blockImage: image3Doc, author: demoAuthor }),
+    data: post2({
+      heroImage: image2Doc,
+      blockImage: image3Doc,
+      author: demoAuthor,
+      articleAuthor: demoArticleAuthor,
+    }),
   })
 
   const post3Doc = await payload.create({
@@ -166,7 +186,12 @@ export const seed = async ({
     context: {
       disableRevalidate: true,
     },
-    data: post3({ heroImage: image3Doc, blockImage: image1Doc, author: demoAuthor }),
+    data: post3({
+      heroImage: image3Doc,
+      blockImage: image1Doc,
+      author: demoAuthor,
+      articleAuthor: demoArticleAuthor,
+    }),
   })
 
   // update each post with related posts
