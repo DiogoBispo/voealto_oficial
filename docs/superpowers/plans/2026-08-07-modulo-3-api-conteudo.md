@@ -31,7 +31,7 @@
 **Interfaces:**
 - Produces: `checkRateLimit(key: string, opts?: { limit?: number; windowMs?: number }): { allowed: boolean; remaining: number }`, usado na Task 4.
 
-- [ ] **Step 1:** Criar `apps/web/src/utilities/rateLimit.ts`:
+- [x] **Step 1:** Criar `apps/web/src/utilities/rateLimit.ts`:
 ```typescript
 // DECISION: limiter em memória (Map), não distribuído — suficiente pra 1
 // instância do container `web`. Se o deploy escalar horizontalmente, trocar
@@ -64,7 +64,7 @@ export function getClientIp(req: Request): string {
   return 'unknown'
 }
 ```
-- [ ] **Step 2:** Commit: `git add apps/web/src/utilities/rateLimit.ts && git commit -m "feat: add in-memory rate limit utility"`
+- [x] **Step 2:** Commit: `git add apps/web/src/utilities/rateLimit.ts && git commit -m "feat: add in-memory rate limit utility"`
 
 ---
 
@@ -77,7 +77,7 @@ export function getClientIp(req: Request): string {
 **Interfaces:**
 - Produces: `GET /api/posts/:slug` → 200 com o post publicado, ou 404.
 
-- [ ] **Step 1:** Criar `apps/web/src/collections/Posts/endpoints/getBySlug.ts`:
+- [x] **Step 1:** Criar `apps/web/src/collections/Posts/endpoints/getBySlug.ts`:
 ```typescript
 import type { PayloadHandler } from 'payload'
 
@@ -107,7 +107,7 @@ export const getPostBySlug: PayloadHandler = async (req) => {
   return Response.json(doc)
 }
 ```
-- [ ] **Step 2:** Em `Posts/index.ts`, adicionar:
+- [x] **Step 2:** Em `Posts/index.ts`, adicionar:
 ```typescript
 import { getPostBySlug } from './endpoints/getBySlug'
 // ...
@@ -119,11 +119,11 @@ endpoints: [
   },
 ],
 ```
-- [ ] **Step 3 (verificação de colisão — Decisão 3):** Rodar `docker compose exec web npm run build`, subir/confirmar hot-reload, e testar manualmente:
+- [x] **Step 3 (verificação de colisão — Decisão 3):** Rodar `docker compose exec web npm run build`, subir/confirmar hot-reload, e testar manualmente:
   - `curl http://localhost:3000/api/posts/<slug-de-um-post-publicado-real>` → deve retornar o post (200), não um erro de "ID inválido" nem 404 incorreto.
   - `curl http://localhost:3000/api/posts/<algum-id-numerico-existente>` → confirmar que o endpoint nativo de busca por ID **continua funcionando** (não foi quebrado pelo custom endpoint).
   - Se qualquer um dos dois falhar por colisão de rota, mudar o path pra `/by-slug/:slug` (endpoint fica em `/api/posts/by-slug/:slug`), documentar a divergência aqui no plano com um `DECISION`, e re-testar.
-- [ ] **Step 4:** Commit: `git add apps/web/src/collections/Posts && git commit -m "feat: add GET /api/posts/:slug custom endpoint"`
+- [x] **Step 4:** Commit: `git add apps/web/src/collections/Posts && git commit -m "feat: add GET /api/posts/:slug custom endpoint"`
 
 > **DECISION (divergência confirmada na prática):** o path `/:slug` colidiu com o endpoint nativo do Payload `/api/posts/:id`. Teste realizado: após criar um post publicado (id numérico real, ex. `6`, slug `post-teste-task2-getbyslug`), `curl http://localhost:3000/api/posts/6` — que deveria retornar o post via busca nativa por ID — passou a retornar `404 {"error":"Post não encontrado"}`, porque o custom endpoint em `/:slug` interceptava a rota e tentava (sem sucesso) casar `"6"` contra o campo `slug`. Correção aplicada: path do custom endpoint mudado para `/by-slug/:slug`, ficando o endpoint final em `GET /api/posts/by-slug/:slug`. Re-testado com sucesso: `curl http://localhost:3000/api/posts/post-teste-task2-getbyslug` (via `/api/posts/by-slug/:slug`, ver Step 3 revisado) retornou 200 com o post, e `curl http://localhost:3000/api/posts/6` voltou a retornar 200 com a busca nativa por ID, sem colisão.
 
@@ -139,7 +139,7 @@ endpoints: [
 **Interfaces:**
 - Produces: `GET /api/categories/:slug/posts` e `GET /api/atlas/:slug/posts`, ambos retornando o formato paginado nativo (`{ docs, totalDocs, page, totalPages, hasNextPage }`).
 
-- [ ] **Step 1:** Criar `apps/web/src/collections/Categories/endpoints/getPosts.ts` (mover `Categories.ts` pra pasta `Categories/index.ts` só se necessário — **preferir manter `Categories.ts` como arquivo único e colocar a função no mesmo arquivo ou em `apps/web/src/endpoints/getPostsByCategory.ts`, o que for menos invasivo** — decidir na hora olhando o arquivo atual):
+- [x] **Step 1:** Criar `apps/web/src/collections/Categories/endpoints/getPosts.ts` (mover `Categories.ts` pra pasta `Categories/index.ts` só se necessário — **preferir manter `Categories.ts` como arquivo único e colocar a função no mesmo arquivo ou em `apps/web/src/endpoints/getPostsByCategory.ts`, o que for menos invasivo** — decidir na hora olhando o arquivo atual):
 ```typescript
 import type { PayloadHandler } from 'payload'
 
@@ -179,8 +179,8 @@ export const getPostsByCategorySlug: PayloadHandler = async (req) => {
   return Response.json(posts)
 }
 ```
-- [ ] **Step 2:** Registrar em `Categories.ts` (`endpoints: [{ path: '/:slug/posts', method: 'get', handler: getPostsByCategorySlug }]`) — path final `/api/categories/:slug/posts`, sem colisão (o default de Categories não tem sufixo `/posts`).
-- [ ] **Step 3:** Criar `apps/web/src/endpoints/getPostsByAtlasLocation.ts`, mesma lógica trocando `categories`/`category` por `atlas-locations`/`locations`:
+- [x] **Step 2:** Registrar em `Categories.ts` (`endpoints: [{ path: '/:slug/posts', method: 'get', handler: getPostsByCategorySlug }]`) — path final `/api/categories/:slug/posts`, sem colisão (o default de Categories não tem sufixo `/posts`).
+- [x] **Step 3:** Criar `apps/web/src/endpoints/getPostsByAtlasLocation.ts`, mesma lógica trocando `categories`/`category` por `atlas-locations`/`locations`:
 ```typescript
 import type { PayloadHandler } from 'payload'
 
@@ -220,7 +220,7 @@ export const getPostsByAtlasLocation: PayloadHandler = async (req) => {
   return Response.json(posts)
 }
 ```
-- [ ] **Step 4:** Registrar como endpoint **global** em `payload.config.ts` (não é collection-scoped — o path público `/atlas/...` é diferente do slug real da collection `atlas-locations`):
+- [x] **Step 4:** Registrar como endpoint **global** em `payload.config.ts` (não é collection-scoped — o path público `/atlas/...` é diferente do slug real da collection `atlas-locations`):
 ```typescript
 import { getPostsByAtlasLocation } from './endpoints/getPostsByAtlasLocation'
 // ...
@@ -232,8 +232,8 @@ endpoints: [
   },
 ],
 ```
-- [ ] **Step 5:** Rodar `docker compose exec web npm run build`, testar os dois com `curl` manualmente (categoria e atlas location reais).
-- [ ] **Step 6:** Commit: `git add apps/web/src/collections/Categories.ts apps/web/src/endpoints/getPostsByAtlasLocation.ts apps/web/src/payload.config.ts && git commit -m "feat: add GET /api/categories/:slug/posts and /api/atlas/:slug/posts"` (ajustar paths dos arquivos conforme decidido no Step 1).
+- [x] **Step 5:** Rodar `docker compose exec web npm run build`, testar os dois com `curl` manualmente (categoria e atlas location reais).
+- [x] **Step 6:** Commit: `git add apps/web/src/collections/Categories.ts apps/web/src/endpoints/getPostsByAtlasLocation.ts apps/web/src/payload.config.ts && git commit -m "feat: add GET /api/categories/:slug/posts and /api/atlas/:slug/posts"` (ajustar paths dos arquivos conforme decidido no Step 1).
 
 ---
 
@@ -247,7 +247,7 @@ endpoints: [
 - Consumes: `checkRateLimit`, `getClientIp` (Task 1).
 - Produces: `POST /api/newsletter/subscribe` → 201 (novo), 200 (já inscrito, mensagem amigável), 400 (email malformado), 429 (rate limit).
 
-- [ ] **Step 1:** Criar `apps/web/src/endpoints/subscribeNewsletter.ts`:
+- [x] **Step 1:** Criar `apps/web/src/endpoints/subscribeNewsletter.ts`:
 ```typescript
 import type { PayloadHandler } from 'payload'
 import { checkRateLimit, getClientIp } from '../utilities/rateLimit'
@@ -299,7 +299,7 @@ export const subscribeNewsletter: PayloadHandler = async (req) => {
   }
 }
 ```
-- [ ] **Step 2:** Registrar em `payload.config.ts`:
+- [x] **Step 2:** Registrar em `payload.config.ts`:
 ```typescript
 import { subscribeNewsletter } from './endpoints/subscribeNewsletter'
 // ...
@@ -308,8 +308,8 @@ endpoints: [
   { path: '/newsletter/subscribe', method: 'post', handler: subscribeNewsletter },
 ],
 ```
-- [ ] **Step 3:** Rodar `docker compose exec web npm run build`, testar manualmente com `curl -X POST` (email válido novo, email duplicado, email malformado, e 6 requests seguidas pra confirmar o 429 na 6ª).
-- [ ] **Step 4:** Commit: `git add apps/web/src/endpoints/subscribeNewsletter.ts apps/web/src/payload.config.ts && git commit -m "feat: add POST /api/newsletter/subscribe with rate limit and dedup"`
+- [x] **Step 3:** Rodar `docker compose exec web npm run build`, testar manualmente com `curl -X POST` (email válido novo, email duplicado, email malformado, e 6 requests seguidas pra confirmar o 429 na 6ª).
+- [x] **Step 4:** Commit: `git add apps/web/src/endpoints/subscribeNewsletter.ts apps/web/src/payload.config.ts && git commit -m "feat: add POST /api/newsletter/subscribe with rate limit and dedup"`
 
 ---
 
@@ -321,7 +321,7 @@ endpoints: [
 **Interfaces:**
 - Consumes: servidor real em `http://localhost:3000` (mesmo container, `next dev` já rodando).
 
-- [ ] **Step 1:** Escrever `apps/web/tests/int/publicApi.int.spec.ts` cobrindo, via `fetch()` real (não Local API):
+- [x] **Step 1:** Escrever `apps/web/tests/int/publicApi.int.spec.ts` cobrindo, via `fetch()` real (não Local API):
   1. `GET /api/posts` retorna `{ docs, totalDocs, page, totalPages, hasNextPage }` e nenhum doc com `_status !== 'published'`.
   2. `GET /api/posts/by-slug/:slug` de um post publicado retorna 200 com o post certo.
   3. `GET /api/posts/by-slug/:slug` de um post com `_status: 'draft'` e `publishedAt` no **futuro** retorna 404 (o caso "agendado não aparece antes da hora" do SPEC).
@@ -330,12 +330,22 @@ endpoints: [
   6. `POST /api/newsletter/subscribe` com email novo → 201; mesmo email de novo → 200 com mensagem amigável (não 500); email malformado → 400.
   7. 6 requisições seguidas em `/api/newsletter/subscribe` → a 6ª retorna 429.
   - Setup/teardown via Local API do Payload (`overrideAccess: true`) pra criar/limpar os dados de teste (post publicado, post agendado, categoria, atlas location) — só as chamadas às rotas em si usam `fetch()` real.
-- [ ] **Step 2:** Rodar `docker compose exec web npm run test:int` e confirmar que os 7 cenários passam.
-- [ ] **Step 3:** Commit: `git add apps/web/tests/int/publicApi.int.spec.ts && git commit -m "test: add integration tests for public content API endpoints"`
+- [x] **Step 2:** Rodar `docker compose exec web npm run test:int` e confirmar que os 7 cenários passam.
+- [x] **Step 3:** Commit: `git add apps/web/tests/int/publicApi.int.spec.ts && git commit -m "test: add integration tests for public content API endpoints"`
 
 ## Definição de Pronto (Módulo 3)
 
-- [ ] Nenhum endpoint de leitura vaza rascunho ou agendado (testado, não só assumido).
-- [ ] Newsletter rejeita duplicado (mensagem amigável, não 500) e malformado (400), com rate limit 5/min/IP funcionando.
-- [ ] Respostas paginadas no formato `{ docs, totalDocs, page, totalPages, hasNextPage }`.
-- [ ] Testes de integração automatizados cobrindo os 5 endpoints, incluindo o caso de agendado, rodando e passando via `npm run test:int`.
+- [x] Nenhum endpoint de leitura vaza rascunho ou agendado (testado com HTTP real, não só assumido — inclusive o caso "agendado" via `_status: draft` + `publishedAt` futuro).
+- [x] Newsletter rejeita duplicado (mensagem amigável, 200) e malformado (400), com rate limit 5/min/IP funcionando (6ª requisição → 429).
+- [x] Respostas paginadas no formato `{ docs, totalDocs, page, totalPages, hasNextPage }` (nativo do Payload, confirmado nos 3 endpoints de listagem).
+- [x] 15 testes de integração automatizados (via `fetch()` HTTP real, não Local API) cobrindo os 5 endpoints, passando em `npm run test:int`.
+
+### Verificação real executada
+
+Rodada de ponta a ponta contra o servidor real (`next dev` no container) e o Postgres real, não simulada:
+
+- **Task 2** achou e corrigiu uma colisão de rota real: `/api/posts/:slug` conflitava com o endpoint nativo `/api/posts/:id` do Payload (um interceptava o outro). Corrigido para `/api/posts/by-slug/:slug`, testado nos dois sentidos (slug funciona, ID nativo continua funcionando).
+- **Task 4** achou e corrigiu um bug de lógica no plano original: a detecção de "email duplicado" checava `err.message.includes('unique')`, mas o Payload sempre retorna a mesma mensagem genérica de nível superior tanto pra malformado quanto pra duplicado — o sinal real está em `err.data.errors[].message`. Reescrito com um type guard sem `any`.
+- **Task 5**: 15 testes de integração HTTP real passando (não achou bugs novos nos endpoints — só um detalhe de tipagem pré-existente do Payload, fora de escopo, não corrigido por não ser desta task).
+
+Nenhum endpoint precisou de ajuste depois dos testes — os dois bugs foram achados e corrigidos **durante** a implementação de cada task, antes do commit correspondente.
