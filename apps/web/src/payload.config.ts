@@ -20,6 +20,7 @@ import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
 import { getPostsByAtlasLocation } from './endpoints/getPostsByAtlasLocation'
+import { subscribeNewsletter } from './endpoints/subscribeNewsletter'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -88,6 +89,11 @@ export default buildConfig({
       path: '/atlas/:slug/posts',
       method: 'get',
       handler: getPostsByAtlasLocation,
+    },
+    {
+      path: '/newsletter/subscribe',
+      method: 'post',
+      handler: subscribeNewsletter,
     },
   ],
   globals: [Header, Footer],

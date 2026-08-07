@@ -1,3 +1,5 @@
+import type { PayloadRequest } from 'payload'
+
 // DECISION: limiter em memória (Map), não distribuído — suficiente pra 1
 // instância do container `web`. Se o deploy escalar horizontalmente, trocar
 // por um store compartilhado (Redis, etc.) — fora de escopo do MVP.
@@ -23,7 +25,11 @@ export function checkRateLimit(
   return { allowed: true, remaining: limit - entry.count }
 }
 
-export function getClientIp(req: Request): string {
+// DECISION: assinatura recebe `PayloadRequest`, não `Request` — o handler real
+// (PayloadHandler) recebe `PayloadRequest`, que é apenas `Partial<Request>`
+// (build falhou com `Request` por incompatibilidade do campo `cache`).
+// `headers` continua garantido em `PayloadRequest` (`Request['headers']`).
+export function getClientIp(req: PayloadRequest): string {
   const forwardedFor = req.headers.get('x-forwarded-for')
   if (forwardedFor) return forwardedFor.split(',')[0].trim()
   return 'unknown'
