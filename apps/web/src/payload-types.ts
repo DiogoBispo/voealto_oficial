@@ -74,6 +74,8 @@ export interface Config {
     tags: Tag;
     'atlas-locations': AtlasLocation;
     authors: Author;
+    'affiliate-links': AffiliateLink;
+    'newsletter-subscribers': NewsletterSubscriber;
     users: User;
     redirects: Redirect;
     forms: Form;
@@ -99,6 +101,8 @@ export interface Config {
     tags: TagsSelect<false> | TagsSelect<true>;
     'atlas-locations': AtlasLocationsSelect<false> | AtlasLocationsSelect<true>;
     authors: AuthorsSelect<false> | AuthorsSelect<true>;
+    'affiliate-links': AffiliateLinksSelect<false> | AffiliateLinksSelect<true>;
+    'newsletter-subscribers': NewsletterSubscribersSelect<false> | NewsletterSubscribersSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
@@ -839,6 +843,32 @@ export interface Author {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "affiliate-links".
+ */
+export interface AffiliateLink {
+  id: number;
+  label: string;
+  url: string;
+  icon?: (number | null) | Media;
+  order?: number | null;
+  active?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "newsletter-subscribers".
+ */
+export interface NewsletterSubscriber {
+  id: number;
+  email: string;
+  subscribedAt?: string | null;
+  source?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1054,6 +1084,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'authors';
         value: number | Author;
+      } | null)
+    | ({
+        relationTo: 'affiliate-links';
+        value: number | AffiliateLink;
+      } | null)
+    | ({
+        relationTo: 'newsletter-subscribers';
+        value: number | NewsletterSubscriber;
       } | null)
     | ({
         relationTo: 'users';
@@ -1442,6 +1480,30 @@ export interface AuthorsSelect<T extends boolean = true> {
       };
   generateSlug?: T;
   slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "affiliate-links_select".
+ */
+export interface AffiliateLinksSelect<T extends boolean = true> {
+  label?: T;
+  url?: T;
+  icon?: T;
+  order?: T;
+  active?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "newsletter-subscribers_select".
+ */
+export interface NewsletterSubscribersSelect<T extends boolean = true> {
+  email?: T;
+  subscribedAt?: T;
+  source?: T;
   updatedAt?: T;
   createdAt?: T;
 }

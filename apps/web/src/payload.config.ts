@@ -4,10 +4,12 @@ import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
 
+import { AffiliateLinks } from './collections/AffiliateLinks'
 import { AtlasLocations } from './collections/AtlasLocations'
 import { Authors } from './collections/Authors'
 import { Categories } from './collections/Categories'
 import { Media } from './collections/Media'
+import { NewsletterSubscribers } from './collections/NewsletterSubscribers'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
 import { Tags } from './collections/Tags'
@@ -65,7 +67,18 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URL || '',
     },
   }),
-  collections: [Pages, Posts, Media, Categories, Tags, AtlasLocations, Authors, Users],
+  collections: [
+    Pages,
+    Posts,
+    Media,
+    Categories,
+    Tags,
+    AtlasLocations,
+    Authors,
+    AffiliateLinks,
+    NewsletterSubscribers,
+    Users,
+  ],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
   plugins,
