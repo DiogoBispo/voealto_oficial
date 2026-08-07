@@ -19,6 +19,7 @@ import { Header } from './Header/config'
 import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
+import { getPostsByAtlasLocation } from './endpoints/getPostsByAtlasLocation'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -80,6 +81,15 @@ export default buildConfig({
     Users,
   ],
   cors: [getServerSideURL()].filter(Boolean),
+  endpoints: [
+    {
+      // DECISION: endpoint global (não collection-scoped) — o path público
+      // '/atlas/...' diverge do slug real da collection ('atlas-locations').
+      path: '/atlas/:slug/posts',
+      method: 'get',
+      handler: getPostsByAtlasLocation,
+    },
+  ],
   globals: [Header, Footer],
   plugins,
   secret: process.env.PAYLOAD_SECRET,

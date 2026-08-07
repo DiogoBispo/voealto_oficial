@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 import { anyone } from '../access/anyone'
 import { isAdminOrEditor } from '../access/isAdminOrEditor'
+import { getPostsByCategorySlug } from '../endpoints/getPostsByCategory'
 import { slugField } from 'payload'
 
 export const Categories: CollectionConfig = {
@@ -15,6 +16,13 @@ export const Categories: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
   },
+  endpoints: [
+    {
+      path: '/:slug/posts',
+      method: 'get',
+      handler: getPostsByCategorySlug,
+    },
+  ],
   fields: [
     {
       name: 'title',
