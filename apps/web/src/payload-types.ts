@@ -73,6 +73,7 @@ export interface Config {
     categories: Category;
     tags: Tag;
     'atlas-locations': AtlasLocation;
+    authors: Author;
     users: User;
     redirects: Redirect;
     forms: Form;
@@ -97,6 +98,7 @@ export interface Config {
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     tags: TagsSelect<false> | TagsSelect<true>;
     'atlas-locations': AtlasLocationsSelect<false> | AtlasLocationsSelect<true>;
+    authors: AuthorsSelect<false> | AuthorsSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
@@ -813,6 +815,30 @@ export interface AtlasLocation {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "authors".
+ */
+export interface Author {
+  id: number;
+  title: string;
+  bio?: string | null;
+  avatar?: (number | null) | Media;
+  socials?:
+    | {
+        platform: 'instagram' | 'tiktok' | 'youtube' | 'facebook' | 'pinterest' | 'website';
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1024,6 +1050,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'atlas-locations';
         value: number | AtlasLocation;
+      } | null)
+    | ({
+        relationTo: 'authors';
+        value: number | Author;
       } | null)
     | ({
         relationTo: 'users';
@@ -1390,6 +1420,26 @@ export interface AtlasLocationsSelect<T extends boolean = true> {
   title?: T;
   type?: T;
   parent?: T;
+  generateSlug?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "authors_select".
+ */
+export interface AuthorsSelect<T extends boolean = true> {
+  title?: T;
+  bio?: T;
+  avatar?: T;
+  socials?:
+    | T
+    | {
+        platform?: T;
+        url?: T;
+        id?: T;
+      };
   generateSlug?: T;
   slug?: T;
   updatedAt?: T;
