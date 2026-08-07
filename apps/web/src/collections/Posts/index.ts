@@ -11,12 +11,15 @@ import {
 
 import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
+import { isAdminEditorOrOwnPost } from '../../access/isAdminEditorOrOwnPost'
 import { Banner } from '../../blocks/Banner/config'
 import { Code } from '../../blocks/Code/config'
 import { MediaBlock } from '../../blocks/MediaBlock/config'
 import { generatePreviewPath } from '../../utilities/generatePreviewPath'
 import { populateAuthors } from './hooks/populateAuthors'
+import { preventContributorPublish } from './hooks/preventContributorPublish'
 import { revalidateDelete, revalidatePost } from './hooks/revalidatePost'
+import { setPostAuthorOnCreate } from './hooks/setPostAuthorOnCreate'
 
 import {
   MetaDescriptionField,
@@ -31,9 +34,9 @@ export const Posts: CollectionConfig<'posts'> = {
   slug: 'posts',
   access: {
     create: authenticated,
-    delete: authenticated,
+    delete: isAdminEditorOrOwnPost,
     read: authenticatedOrPublished,
-    update: authenticated,
+    update: isAdminEditorOrOwnPost,
   },
   // This config controls what's populated by default when a post is referenced
   // https://payloadcms.com/docs/queries/select#defaultpopulate-collection-config-property
@@ -262,6 +265,7 @@ export const Posts: CollectionConfig<'posts'> = {
     slugField(),
   ],
   hooks: {
+    beforeChange: [setPostAuthorOnCreate, preventContributorPublish],
     afterChange: [revalidatePost],
     afterRead: [populateAuthors],
     afterDelete: [revalidateDelete],
