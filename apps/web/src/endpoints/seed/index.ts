@@ -106,6 +106,9 @@ export const seed = async ({
           name: 'Demo Author',
           email: 'demo-author@example.com',
           password: 'password',
+          // DECISION: `role` passou a ser obrigatório (Módulo 2 — RBAC).
+          // 'editor' é o papel mais coerente pra um usuário demo que assina posts.
+          role: 'editor',
         },
       }),
       // DECISION: Posts.author (relationship -> authors) agora é obrigatório;

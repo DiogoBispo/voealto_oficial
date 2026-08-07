@@ -4,6 +4,9 @@ import config from '../../src/payload.config.js'
 export const testUser = {
   email: 'dev@payloadcms.com',
   password: 'test',
+  // DECISION: `role` passou a ser obrigatório (Módulo 2 — RBAC). 'admin' porque
+  // este usuário faz login no /admin nos testes e2e (tests/e2e/admin.e2e.spec.ts).
+  role: 'admin' as const,
 }
 
 /**
