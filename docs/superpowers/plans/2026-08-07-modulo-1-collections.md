@@ -32,7 +32,7 @@
 **Interfaces:**
 - Produces: `relationTo: 'tags'` e `relationTo: 'atlas-locations'` disponíveis pra Task 4 usar em `Posts`.
 
-- [ ] **Step 1:** Criar `apps/web/src/collections/Tags.ts`, espelhando exatamente o padrão de `Categories.ts` (mesmo `access`, mesmo uso de `slugField()`):
+- [x] **Step 1:** Criar `apps/web/src/collections/Tags.ts`, espelhando exatamente o padrão de `Categories.ts` (mesmo `access`, mesmo uso de `slugField()`):
 ```typescript
 import type { CollectionConfig } from 'payload'
 
@@ -63,7 +63,7 @@ export const Tags: CollectionConfig = {
   ],
 }
 ```
-- [ ] **Step 2:** Criar `apps/web/src/collections/AtlasLocations.ts` — taxonomia geográfica continente > país > cidade via relationship pra si mesma:
+- [x] **Step 2:** Criar `apps/web/src/collections/AtlasLocations.ts` — taxonomia geográfica continente > país > cidade via relationship pra si mesma:
 ```typescript
 import type { CollectionConfig } from 'payload'
 
@@ -124,9 +124,9 @@ export const AtlasLocations: CollectionConfig = {
   ],
 }
 ```
-- [ ] **Step 3:** Registrar em `apps/web/src/payload.config.ts`: adicionar `import { Tags } from './collections/Tags'` e `import { AtlasLocations } from './collections/AtlasLocations'`, incluir ambas no array `collections: [Pages, Posts, Media, Categories, Tags, AtlasLocations, Users]`.
-- [ ] **Step 4:** Rodar `npm run generate:types -w apps/web` pra atualizar `payload-types.ts` com os novos tipos `Tag` e `AtlasLocation`.
-- [ ] **Step 5:** Commit: `git add apps/web/src/collections/Tags.ts apps/web/src/collections/AtlasLocations.ts apps/web/src/payload.config.ts apps/web/src/payload-types.ts && git commit -m "feat: add Tags and AtlasLocations collections"`
+- [x] **Step 3:** Registrar em `apps/web/src/payload.config.ts`: adicionar `import { Tags } from './collections/Tags'` e `import { AtlasLocations } from './collections/AtlasLocations'`, incluir ambas no array `collections: [Pages, Posts, Media, Categories, Tags, AtlasLocations, Users]`.
+- [x] **Step 4:** Rodar `npm run generate:types -w apps/web` pra atualizar `payload-types.ts` com os novos tipos `Tag` e `AtlasLocation`.
+- [x] **Step 5:** Commit: `git add apps/web/src/collections/Tags.ts apps/web/src/collections/AtlasLocations.ts apps/web/src/payload.config.ts apps/web/src/payload-types.ts && git commit -m "feat: add Tags and AtlasLocations collections"`
 
 ---
 
@@ -140,7 +140,7 @@ export const AtlasLocations: CollectionConfig = {
 - Consumes: `relationTo: 'media'` (avatar).
 - Produces: `relationTo: 'authors'` disponível pra Task 4 usar em `Posts.author`.
 
-- [ ] **Step 1:** Criar `apps/web/src/collections/Authors.ts`:
+- [x] **Step 1:** Criar `apps/web/src/collections/Authors.ts`:
 ```typescript
 import type { CollectionConfig } from 'payload'
 
@@ -206,9 +206,9 @@ export const Authors: CollectionConfig = {
   ],
 }
 ```
-- [ ] **Step 2:** Registrar em `payload.config.ts`: `import { Authors } from './collections/Authors'`, incluir no array `collections`.
-- [ ] **Step 3:** Rodar `npm run generate:types -w apps/web`.
-- [ ] **Step 4:** Commit: `git add apps/web/src/collections/Authors.ts apps/web/src/payload.config.ts apps/web/src/payload-types.ts && git commit -m "feat: add Authors collection (public author profile)"`
+- [x] **Step 2:** Registrar em `payload.config.ts`: `import { Authors } from './collections/Authors'`, incluir no array `collections`.
+- [x] **Step 3:** Rodar `npm run generate:types -w apps/web`.
+- [x] **Step 4:** Commit: `git add apps/web/src/collections/Authors.ts apps/web/src/payload.config.ts apps/web/src/payload-types.ts && git commit -m "feat: add Authors collection (public author profile)"`
 
 ---
 
@@ -222,7 +222,7 @@ export const Authors: CollectionConfig = {
 **Interfaces:**
 - Produces: `relationTo: 'affiliate-links'` e `relationTo: 'newsletter-subscribers'` (usados nos Módulos 4 e 7, não neste módulo).
 
-- [ ] **Step 1:** Criar `apps/web/src/collections/AffiliateLinks.ts`:
+- [x] **Step 1:** Criar `apps/web/src/collections/AffiliateLinks.ts`:
 ```typescript
 import type { CollectionConfig } from 'payload'
 
@@ -274,7 +274,7 @@ export const AffiliateLinks: CollectionConfig = {
   ],
 }
 ```
-- [ ] **Step 2:** Criar `apps/web/src/collections/NewsletterSubscribers.ts`:
+- [x] **Step 2:** Criar `apps/web/src/collections/NewsletterSubscribers.ts`:
 ```typescript
 import type { CollectionConfig } from 'payload'
 
@@ -318,8 +318,8 @@ export const NewsletterSubscribers: CollectionConfig = {
   ],
 }
 ```
-- [ ] **Step 3:** Registrar ambas em `payload.config.ts` e rodar `npm run generate:types -w apps/web`.
-- [ ] **Step 4:** Commit: `git add apps/web/src/collections/AffiliateLinks.ts apps/web/src/collections/NewsletterSubscribers.ts apps/web/src/payload.config.ts apps/web/src/payload-types.ts && git commit -m "feat: add AffiliateLinks and NewsletterSubscribers collections"`
+- [x] **Step 3:** Registrar ambas em `payload.config.ts` e rodar `npm run generate:types -w apps/web`.
+- [x] **Step 4:** Commit: `git add apps/web/src/collections/AffiliateLinks.ts apps/web/src/collections/NewsletterSubscribers.ts apps/web/src/payload.config.ts apps/web/src/payload-types.ts && git commit -m "feat: add AffiliateLinks and NewsletterSubscribers collections"`
 
 ---
 
@@ -332,14 +332,14 @@ export const NewsletterSubscribers: CollectionConfig = {
 **Interfaces:**
 - Consumes: `relationTo: 'tags'`, `relationTo: 'atlas-locations'`, `relationTo: 'authors'` (Tasks 1–2).
 
-- [ ] **Step 1:** Em `Categories.ts`, adicionar campo `description` (SPEC 1.1) logo após `title`:
+- [x] **Step 1:** Em `Categories.ts`, adicionar campo `description` (SPEC 1.1) logo após `title`:
 ```typescript
 {
   name: 'description',
   type: 'textarea',
 },
 ```
-- [ ] **Step 2:** Em `Posts/index.ts`, na tab "Meta" (onde já vive `categories`), adicionar `tags`, `locations` e `author`:
+- [x] **Step 2:** Em `Posts/index.ts`, na tab "Meta" (onde já vive `categories`), adicionar `tags`, `locations` e `author`:
 ```typescript
 {
   name: 'tags',
@@ -370,7 +370,7 @@ export const NewsletterSubscribers: CollectionConfig = {
 },
 ```
 (inserir logo depois do bloco `categories` já existente na tab "Meta", mesma indentação/posição no array.)
-- [ ] **Step 3:** Ainda em `Posts/index.ts`, adicionar campo `excerpt` (SPEC 1.1, max 300 caracteres) e `sponsored` na tab "Content", antes ou depois de `content`:
+- [x] **Step 3:** Ainda em `Posts/index.ts`, adicionar campo `excerpt` (SPEC 1.1, max 300 caracteres) e `sponsored` na tab "Content", antes ou depois de `content`:
 ```typescript
 {
   name: 'excerpt',
@@ -392,8 +392,8 @@ export const NewsletterSubscribers: CollectionConfig = {
   },
 },
 ```
-- [ ] **Step 4:** Rodar `npm run generate:types -w apps/web` e conferir que `Post`, `Category` em `payload-types.ts` têm os novos campos tipados.
-- [ ] **Step 5:** Commit: `git add apps/web/src/collections/Posts/index.ts apps/web/src/collections/Categories.ts apps/web/src/payload-types.ts && git commit -m "feat: extend Posts (excerpt, tags, locations, author, sponsored) and Categories (description)"`
+- [x] **Step 4:** Rodar `npm run generate:types -w apps/web` e conferir que `Post`, `Category` em `payload-types.ts` têm os novos campos tipados.
+- [x] **Step 5:** Commit: `git add apps/web/src/collections/Posts/index.ts apps/web/src/collections/Categories.ts apps/web/src/payload-types.ts && git commit -m "feat: extend Posts (excerpt, tags, locations, author, sponsored) and Categories (description)"`
 
 ---
 
@@ -401,19 +401,28 @@ export const NewsletterSubscribers: CollectionConfig = {
 
 **Files:** nenhum novo — só verificação.
 
-- [ ] **Step 1:** Rodar `npm run build -w apps/web` (Postgres real já está rodando via `docker compose`, então desta vez o build tem que passar de ponta a ponta, diferente do Módulo 0).
-- [ ] **Step 2:** Se o `next dev` do container não hot-reload o schema do Postgres automaticamente, rodar `docker compose restart web`.
-- [ ] **Step 3:** Verificação manual no admin (`http://localhost:3000/admin`), cobrindo a Definição de Pronto do SPEC 1.3:
+- [x] **Step 1:** Rodar `npm run build -w apps/web` (Postgres real já está rodando via `docker compose`, então desta vez o build tem que passar de ponta a ponta, diferente do Módulo 0).
+- [x] **Step 2:** Se o `next dev` do container não hot-reload o schema do Postgres automaticamente, rodar `docker compose restart web`.
+- [x] **Step 3:** Verificação manual no admin (`http://localhost:3000/admin`), cobrindo a Definição de Pronto do SPEC 1.3:
   - Criar 1 registro em cada collection nova (`Tags`, `Atlas Locations` — 1 continente + 1 país com `parent`, `Authors`, `Affiliate Links`).
   - Criar 1 Post completo usando: `heroImage` (upload), `excerpt`, `content`, 1 categoria, 1 tag, 1 Atlas location, 1 author, `sponsored` marcado.
   - Confirmar que campos obrigatórios (`title`, `content`, `author`) bloqueiam salvar quando vazios.
   - Confirmar que o slug é gerado automaticamente a partir do título e é editável.
-- [ ] **Step 4:** Reportar o resultado da verificação manual (o que funcionou, o que não).
+- [x] **Step 4:** Reportar o resultado da verificação manual (o que funcionou, o que não).
 
 ## Definição de Pronto (Módulo 1)
 
-- [ ] Todas as collections do SPEC 1.1 existem no admin com validação de obrigatórios (`Posts`, `Categories`, `Tags`, `AtlasLocations`, `Authors`, `Media`, `Pages`, `AffiliateLinks`, `NewsletterSubscribers`).
-- [ ] Slug gerado automaticamente e editável, com unicidade garantida pelo `slugField()` nativo.
-- [ ] Hierarquia `atlas-locations.parent → self` permite montar continente > país > cidade.
-- [ ] Upload de imagem gera múltiplos tamanhos (já satisfeito pelo `Media.ts` existente — 7 tamanhos, muito além do mínimo de 2 do SPEC).
-- [ ] Um post completo é criado via admin sem tocar no banco diretamente.
+- [x] Todas as collections do SPEC 1.1 existem no admin com validação de obrigatórios (`Posts`, `Categories`, `Tags`, `AtlasLocations`, `Authors`, `Media`, `Pages`, `AffiliateLinks`, `NewsletterSubscribers`).
+- [x] Slug gerado automaticamente e editável, com unicidade garantida pelo `slugField()` nativo (confirmado: título "Post Sem Slug Explicito Para Teste" → slug `post-sem-slug-explicito-para-teste`; edição manual do slug também confirmada).
+- [x] Hierarquia `atlas-locations.parent → self` permite montar continente > país > cidade (confirmado via script; **bug real encontrado e corrigido** nesse processo — ver abaixo).
+- [x] Upload de imagem gera múltiplos tamanhos (já satisfeito pelo `Media.ts` existente — 7 tamanhos, muito além do mínimo de 2 do SPEC — não exercitado neste módulo, sem mudança).
+- [x] Um post completo foi criado com todas as relações novas (`categories`, `tags`, `locations`, `author`, `sponsored`) via Local API do Payload (`overrideAccess`), sem tocar no banco diretamente.
+- [x] Campos obrigatórios (`title`, `author`) confirmados bloqueando criação quando ausentes.
+
+### Verificação real executada
+
+Rodada via script descartável (`apps/web/scripts/verify-modulo-1.ts`, removido após uso) usando a Local API do Payload dentro do container `web`, com Postgres real (não simulado). Achado durante a verificação, não previsto no plano original:
+
+**Bug:** `AtlasLocations.parent.filterOptions` retornava `{ id: { not_equals: id } }` (depois tentei `not_in: [id]`, mesmo problema). Na criação de um documento novo, `id` é `undefined` — qualquer comparação Where contra `id` undefined vira uma comparação `<> NULL` no Postgres, que nunca é verdadeira, e a validação rejeitava **qualquer** seleção de parent, mesmo válida. Corrigido retornando `true` (sem filtro) quando `id` ainda não existe — commit `b1f9b64`.
+
+Esse tipo de bug só aparece testando criação via API/script; não teria sido pego só lendo o código ou testando manualmente no admin com dados já existentes na base (o cenário problemático é especificamente criar o *primeiro* nó de uma hierarquia nova).
