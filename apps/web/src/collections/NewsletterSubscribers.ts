@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
-import { authenticated } from '../access/authenticated'
+import { isAdminOrEditor } from '../access/isAdminOrEditor'
 
 export const NewsletterSubscribers: CollectionConfig = {
   slug: 'newsletter-subscribers',
@@ -9,13 +9,14 @@ export const NewsletterSubscribers: CollectionConfig = {
     plural: 'Newsletter Subscribers',
   },
   access: {
-    // DECISION: ninguém lê/edita pelo admin público além de usuários autenticados;
-    // a escrita pública real acontece via endpoint custom no Módulo 3/7 (com sua
-    // própria validação/rate-limit), não diretamente pela API REST da collection.
-    create: authenticated,
-    delete: authenticated,
-    read: authenticated,
-    update: authenticated,
+    // DECISION: restrito a admin/editor — contributor não vê nem gerencia a lista
+    // de inscritos (RBAC Módulo 2). A escrita pública real acontece via endpoint
+    // custom no Módulo 3/7 (com sua própria validação/rate-limit), não diretamente
+    // pela API REST da collection.
+    create: isAdminOrEditor,
+    delete: isAdminOrEditor,
+    read: isAdminOrEditor,
+    update: isAdminOrEditor,
   },
   admin: {
     useAsTitle: 'email',

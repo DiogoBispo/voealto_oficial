@@ -10,6 +10,7 @@ import { fileURLToPath } from 'url'
 
 import { anyone } from '../access/anyone'
 import { authenticated } from '../access/authenticated'
+import { isAdminOrEditor } from '../access/isAdminOrEditor'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -18,10 +19,12 @@ export const Media: CollectionConfig = {
   slug: 'media',
   folders: true,
   access: {
+    // DECISION: create continua liberado pra qualquer usuário logado (inclusive
+    // contributor) — precisa poder subir imagem pro próprio post (Decisão 2 do plano).
     create: authenticated,
-    delete: authenticated,
+    delete: isAdminOrEditor,
     read: anyone,
-    update: authenticated,
+    update: isAdminOrEditor,
   },
   fields: [
     {
