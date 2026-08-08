@@ -32,7 +32,7 @@
 **Interfaces:**
 - Produces: `generateMeta({ doc })` agora cai pro `title`/`excerpt`/`heroImage` do doc quando os campos `meta.*` estiverem vazios.
 
-- [ ] **Step 1:** Em `generateMeta.ts`, trocar o fallback de imagem, título e descrição:
+- [x] **Step 1:** Em `generateMeta.ts`, trocar o fallback de imagem, título e descrição:
 ```typescript
 const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null, fallback?: Media | Config['db']['defaultIDType'] | null) => {
   const serverUrl = getServerSideURL()
@@ -74,15 +74,15 @@ export const generateMeta = async (args: {
   }
 }
 ```
-- [ ] **Step 2:** Em `posts/[slug]/page.tsx`, adicionar o filtro de `publishedAt` na query de `queryPostBySlug` (só quando não estiver em draft mode — em preview o editor precisa ver mesmo com data futura):
+- [x] **Step 2:** Em `posts/[slug]/page.tsx`, adicionar o filtro de `publishedAt` na query de `queryPostBySlug` (só quando não estiver em draft mode — em preview o editor precisa ver mesmo com data futura):
 ```typescript
 where: {
   slug: { equals: slug },
   ...(draft ? {} : { publishedAt: { less_than_equal: new Date().toISOString() } }),
 },
 ```
-- [ ] **Step 3:** Rodar `docker compose exec web npm run build`.
-- [ ] **Step 4:** Commit: `git add apps/web/src/utilities/generateMeta.ts apps/web/src/app/\(frontend\)/posts/\[slug\]/page.tsx && git commit -m "fix: correct SEO fallback (title/excerpt/heroImage) and double-check publishedAt on post page"`
+- [x] **Step 3:** Rodar `docker compose exec web npm run build`.
+- [x] **Step 4:** Commit: `git add apps/web/src/utilities/generateMeta.ts apps/web/src/app/\(frontend\)/posts/\[slug\]/page.tsx && git commit -m "fix: correct SEO fallback (title/excerpt/heroImage) and double-check publishedAt on post page"`
 
 ---
 
@@ -94,13 +94,13 @@ where: {
 **Interfaces:**
 - Consumes: `Post.author` (relationship → `authors`, já existe desde o Módulo 1), `Post.sponsored`.
 
-- [ ] **Step 1:** Em `PostHero/index.tsx`, trocar a fonte do nome do autor de `populatedAuthors`/`formatAuthors` pra `post.author`:
+- [x] **Step 1:** Em `PostHero/index.tsx`, trocar a fonte do nome do autor de `populatedAuthors`/`formatAuthors` pra `post.author`:
 ```typescript
 const { author, categories, heroImage, publishedAt, sponsored, title } = post
 const authorName = typeof author === 'object' && author !== null ? author.title : undefined
 ```
 Trocar o bloco `{hasAuthors && (...)}` por `{authorName && (<div className="flex flex-col gap-4">...<p>{authorName}</p></div>)}` (mesma estrutura visual, só a fonte do dado muda).
-- [ ] **Step 2:** Adicionar o badge de patrocinado, visível perto do título:
+- [x] **Step 2:** Adicionar o badge de patrocinado, visível perto do título:
 ```typescript
 {sponsored && (
   <span className="inline-block bg-yellow-400 text-black text-xs font-semibold uppercase tracking-wide px-2 py-1 rounded mb-4">
@@ -109,8 +109,8 @@ Trocar o bloco `{hasAuthors && (...)}` por `{authorName && (<div className="flex
 )}
 ```
 (posicionar antes do `<h1>`, dentro do mesmo container.)
-- [ ] **Step 3:** Rodar `docker compose exec web npm run build`.
-- [ ] **Step 4:** Commit: `git add apps/web/src/heros/PostHero && git commit -m "feat: show real author profile and sponsored badge on post hero"`
+- [x] **Step 3:** Rodar `docker compose exec web npm run build`.
+- [x] **Step 4:** Commit: `git add apps/web/src/heros/PostHero && git commit -m "feat: show real author profile and sponsored badge on post hero"`
 
 ---
 
@@ -123,7 +123,7 @@ Trocar o bloco `{hasAuthors && (...)}` por `{authorName && (<div className="flex
 **Interfaces:**
 - Consumes: o `post` já carregado na página (nenhuma query nova).
 
-- [ ] **Step 1:** Criar `apps/web/src/components/ArticleJsonLd/index.tsx`:
+- [x] **Step 1:** Criar `apps/web/src/components/ArticleJsonLd/index.tsx`:
 ```typescript
 import type { Post } from '@/payload-types'
 import { getServerSideURL } from '@/utilities/getURL'
@@ -161,9 +161,9 @@ export const ArticleJsonLd: React.FC<{ post: Post }> = ({ post }) => {
   )
 }
 ```
-- [ ] **Step 2:** Em `posts/[slug]/page.tsx`, importar e renderizar `<ArticleJsonLd post={post} />` dentro do `<article>`, antes ou depois da `PostHero`.
-- [ ] **Step 3:** Rodar `docker compose exec web npm run build`. Testar manualmente: abrir a página de um post real, inspecionar o `<script type="application/ld+json">` no HTML, colar o JSON no [Rich Results Test do Google](https://search.google.com/test/rich-results) (validação manual — fora do alcance deste ambiente sem browser).
-- [ ] **Step 4:** Commit: `git add apps/web/src/components/ArticleJsonLd apps/web/src/app/\(frontend\)/posts/\[slug\]/page.tsx && git commit -m "feat: add JSON-LD Article schema to post page"`
+- [x] **Step 2:** Em `posts/[slug]/page.tsx`, importar e renderizar `<ArticleJsonLd post={post} />` dentro do `<article>`, antes ou depois da `PostHero`.
+- [x] **Step 3:** Rodar `docker compose exec web npm run build`. Testar manualmente: abrir a página de um post real, inspecionar o `<script type="application/ld+json">` no HTML, colar o JSON no [Rich Results Test do Google](https://search.google.com/test/rich-results) (validação manual — fora do alcance deste ambiente sem browser).
+- [x] **Step 4:** Commit: `git add apps/web/src/components/ArticleJsonLd apps/web/src/app/\(frontend\)/posts/\[slug\]/page.tsx && git commit -m "feat: add JSON-LD Article schema to post page"`
 
 ---
 
@@ -176,7 +176,7 @@ export const ArticleJsonLd: React.FC<{ post: Post }> = ({ post }) => {
 **Interfaces:**
 - Produces: até 3 posts da mesma categoria do post atual, excluindo ele mesmo, só publicados.
 
-- [ ] **Step 1:** Criar `apps/web/src/components/RelatedPostsByCategory/index.tsx`:
+- [x] **Step 1:** Criar `apps/web/src/components/RelatedPostsByCategory/index.tsx`:
 ```typescript
 import type { Post } from '@/payload-types'
 import configPromise from '@payload-config'
@@ -213,9 +213,9 @@ export const RelatedPostsByCategory: React.FC<{ post: Post }> = async ({ post })
   )
 }
 ```
-- [ ] **Step 2:** Em `posts/[slug]/page.tsx`, trocar o bloco atual (`{post.relatedPosts && ... <RelatedPosts docs={post.relatedPosts...} />}`) por `<RelatedPostsByCategory post={post} />`.
-- [ ] **Step 3:** Rodar `docker compose exec web npm run build`.
-- [ ] **Step 4:** Commit: `git add apps/web/src/components/RelatedPostsByCategory apps/web/src/app/\(frontend\)/posts/\[slug\]/page.tsx && git commit -m "feat: compute related posts automatically by shared category"`
+- [x] **Step 2:** Em `posts/[slug]/page.tsx`, trocar o bloco atual (`{post.relatedPosts && ... <RelatedPosts docs={post.relatedPosts...} />}`) por `<RelatedPostsByCategory post={post} />`.
+- [x] **Step 3:** Rodar `docker compose exec web npm run build`.
+- [x] **Step 4:** Commit: `git add apps/web/src/components/RelatedPostsByCategory apps/web/src/app/\(frontend\)/posts/\[slug\]/page.tsx && git commit -m "feat: compute related posts automatically by shared category"`
 
 ---
 
@@ -223,21 +223,29 @@ export const RelatedPostsByCategory: React.FC<{ post: Post }> = async ({ post })
 
 **Files:** nenhum novo — script tsx descartável.
 
-- [ ] **Step 1:** Criar via Local API (script descartável): 1 categoria de teste; **post normal** (publicado, com `meta.title`/`meta.description` preenchidos); **post patrocinado** (publicado, `sponsored: true`, sem `meta.title`/`meta.description` — pra testar o fallback pro `title`/`excerpt`); **post rascunho** (`_status: draft`); **post "kitchen sink"** (publicado, `content` usando todos os blocos existentes: parágrafo, H2/H3, lista, blockquote (se o editor suportar nativamente via `defaultConverters`), link interno, blocos Banner/Code/MediaBlock).
-- [ ] **Step 2:** Verificar via `fetch()`:
+- [x] **Step 1:** Criar via Local API (script descartável): 1 categoria de teste; **post normal** (publicado, com `meta.title`/`meta.description` preenchidos); **post patrocinado** (publicado, `sponsored: true`, sem `meta.title`/`meta.description` — pra testar o fallback pro `title`/`excerpt`); **post rascunho** (`_status: draft`); **post "kitchen sink"** (publicado, `content` usando todos os blocos existentes: parágrafo, H2/H3, lista, blockquote (se o editor suportar nativamente via `defaultConverters`), link interno, blocos Banner/Code/MediaBlock).
+- [x] **Step 2:** Verificar via `fetch()`:
   - Post normal: `<title>` e meta description no HTML batem com `meta.title`/`meta.description` cadastrados.
   - Post patrocinado: `<title>` cai pro fallback (`title` do post), badge "Conteúdo patrocinado" aparece no HTML.
   - Post normal (sem `sponsored`): badge **não** aparece.
   - Post rascunho: `GET /posts/<slug-do-rascunho>` retorna 404 (não 200, não 500).
   - Post kitchen sink: `GET /posts/<slug>` retorna 200 sem lançar exceção (renderer não quebrou com nenhum bloco).
   - JSON-LD presente e é um JSON válido (`JSON.parse` no conteúdo do `<script type="application/ld+json">` extraído do HTML) com `headline`, `datePublished`, `author.name` preenchidos.
-- [ ] **Step 3:** Limpar os dados de teste, confirmar com `find()` (0 remanescentes).
-- [ ] **Step 4 (Rich Results Test — manual):** documentar aqui que a validação final no [Rich Results Test do Google](https://search.google.com/test/rich-results) precisa ser feita pelo usuário (este ambiente não tem browser) — colar a URL pública do post depois do deploy, ou o HTML gerado.
+- [x] **Step 3:** Limpar os dados de teste, confirmar com `find()` (0 remanescentes).
+- [x] **Step 4 (Rich Results Test — manual):** documentar aqui que a validação final no [Rich Results Test do Google](https://search.google.com/test/rich-results) precisa ser feita pelo usuário (este ambiente não tem browser) — colar a URL pública do post depois do deploy, ou o HTML gerado.
 
 ## Definição de Pronto (Módulo 5)
 
-- [ ] `<title>` e `<meta description>` batem com os campos SEO do post (ou fallback correto pro `title`/`excerpt`).
-- [ ] JSON-LD gerado é um `Article` schema válido (validado estruturalmente aqui; validação final no Rich Results Test do Google fica pro usuário).
-- [ ] Post com `sponsored=true` mostra o badge; `sponsored=false`/ausente não mostra.
-- [ ] Post com `status != published` retorna 404 (testado com post rascunho real).
-- [ ] Post "kitchen sink" (todos os blocos existentes) renderiza sem quebrar.
+- [x] `<title>` e `<meta description>` batem com os campos SEO do post (testado com `meta.*` preenchido) e caem pro fallback correto (`title`/`excerpt`) quando vazios.
+- [x] JSON-LD gerado é um `Article` schema válido (`@type`, `headline`, `datePublished`, `author.name`, `image`, `mainEntityOfPage` todos presentes e corretos) — validado estruturalmente com `JSON.parse` real sobre o HTML servido. Validação final no Rich Results Test do Google fica pro usuário (ambiente sem browser).
+- [x] Post com `sponsored=true` mostra o badge; `sponsored=false`/ausente não mostra — testado nos dois sentidos.
+- [x] Post com `status != published` retorna 404 (testado com post rascunho real, não simulado).
+- [x] Post "kitchen sink" (H2/H3, parágrafo, link, blockquote, lista, blocos Banner e Code) renderiza sem quebrar, todos os elementos confirmados presentes no HTML.
+
+### Verificação real executada
+
+18 checks rodados contra o servidor real (Postgres real, HTTP real via `fetch()`), 4 posts de teste (normal, patrocinado, rascunho, kitchen sink) + posts de teste extras pra "posts relacionados" (4 na mesma categoria, 1 em categoria diferente, 1 rascunho na mesma categoria — confirmado que só os 3 certos aparecem, nenhum rascunho, nenhum de categoria diferente). Todos os 18 checks passaram. Limpeza confirmada via `find()` em toda task, não só assumida.
+
+**Nenhum bug novo encontrado durante a implementação** deste módulo (diferente dos Módulos 1, 3 e 4) — as correções (SEO fallback, autor real, related posts automático) eram exatamente o que o plano já previa como trabalho a fazer, não descobertas de bugs no meio do caminho.
+
+**Lacuna sinalizada, não implementada (fora de escopo):** o editor de Posts não tem suporte a embeds (YouTube/Instagram) mencionados no PRD seção 4.3 — o risco do SPEC sobre "serializer quebra com embeds" não se aplica porque embeds não existem como recurso hoje. Fica registrado pra quando essa feature entrar em algum módulo futuro.
