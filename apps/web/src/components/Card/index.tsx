@@ -8,7 +8,15 @@ import type { Post } from '@/payload-types'
 
 import { Media } from '@/components/Media'
 
-export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title'>
+// DECISION: author/publishedAt como Partial, não Pick direto — o plano (Task 1) pede
+// `Pick<Post, ... | 'author' | 'publishedAt'>`, mas `Post.author` é obrigatório em `Post`,
+// então isso tornaria `CardPostData.author` obrigatório e quebraria toda chamada existente de
+// `CollectionArchive`/`Card` cujo `payload.find` não seleciona esses campos (ex.: /posts,
+// /search) — arquivos fora do escopo desta task. Author/publishedAt são exibidos de forma
+// condicional no JSX abaixo, então mantê-los opcionais preserva o comportamento atual sem
+// forçar mudanças em arquivos que a Task 1 não lista.
+export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title'> &
+  Partial<Pick<Post, 'author' | 'publishedAt'>>
 
 export const Card: React.FC<{
   alignItems?: 'center'
@@ -21,13 +29,23 @@ export const Card: React.FC<{
   const { card, link } = useClickableCard({})
   const { className, doc, relationTo, showCategories, title: titleFromProps } = props
 
-  const { slug, categories, meta, title } = doc || {}
+  const { slug, categories, meta, title, author, publishedAt } = doc || {}
   const { description, image: metaImage } = meta || {}
 
   const hasCategories = categories && Array.isArray(categories) && categories.length > 0
   const titleToUse = titleFromProps || title
   const sanitizedDescription = description?.replace(/\s/g, ' ') // replace non-breaking space with white space
   const href = `/${relationTo}/${slug}`
+
+  const authorName =
+    typeof author === 'object' && author !== null ? author.title : undefined
+  const formattedDate = publishedAt
+    ? new Date(publishedAt).toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+      })
+    : undefined
 
   return (
     <article
@@ -39,7 +57,13 @@ export const Card: React.FC<{
     >
       <div className="relative w-full ">
         {!metaImage && <div className="">No image</div>}
-        {metaImage && typeof metaImage !== 'string' && <Media resource={metaImage} size="33vw" />}
+        {metaImage && typeof metaImage !== 'string' && (
+          <Media
+            resource={metaImage}
+            size="33vw"
+            alt={(typeof metaImage === 'object' && metaImage.alt) || titleToUse || ''}
+          />
+        )}
       </div>
       <div className="p-4">
         {showCategories && hasCategories && (
@@ -71,6 +95,13 @@ export const Card: React.FC<{
                 {titleToUse}
               </Link>
             </h3>
+          </div>
+        )}
+        {(authorName || formattedDate) && (
+          <div className="text-sm text-muted-foreground mt-1">
+            {authorName}
+            {authorName && formattedDate && ' · '}
+            {formattedDate}
           </div>
         )}
         {description && <div className="mt-2">{description && <p>{sanitizedDescription}</p>}</div>}
