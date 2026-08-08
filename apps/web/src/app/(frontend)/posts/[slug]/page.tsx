@@ -101,6 +101,7 @@ const queryPostBySlug = cache(async ({ slug }: { slug: string }) => {
       slug: {
         equals: slug,
       },
+      ...(draft ? {} : { publishedAt: { less_than_equal: new Date().toISOString() } }),
     },
   })
 
